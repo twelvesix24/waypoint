@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waypoint Alignment Strategies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:        #162e50;
+    --navy-dark:   #0d1e36;
+    --navy-mid:    #1a3660;
+    --blue:        #267eb3;
+    --teal:        #4ca2b5;
+    --slate:       #728196;
+    --slate-light: #b2c4d3;
+    --gold:        #ffd27f;
+    --off-white:   #f5f7f9;
+    --warm-white:  #fafbfc;
+    --text-dark:   #162e50;
+    --text-mid:    #445568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 3rem;
+    background: rgba(22,46,80,0.97);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(76,162,181,0.2);
+  }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-logo img {
+    height: 50px; width: auto; object-fit: contain;
+    filter: brightness(0) invert(1); opacity: 0.9;
+  }
+  .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.78rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--slate-light); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    background: var(--navy-dark);
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    padding-top: 70px;
+  }
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(76,162,181,0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(76,162,181,0.055) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .hero-glow {
+    position: absolute; top: -160px; right: -100px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(38,126,179,0.18) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-glow-2 {
+    position: absolute; bottom: -60px; left: 5%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(76,162,181,0.09) 0%, transparent 68%);
+    pointer-events: none;
+  }
+  .hero-accent-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--teal) 60%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 4rem 3rem 7rem;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    position: relative; z-index: 2;
+  }
+  .hero-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.7rem;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 1.8rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block; width: 36px; height: 1px; background: var(--teal);
+  }
+  .hero-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300; font-size: clamp(3.2rem, 6vw, 5.8rem);
+    line-height: 1.04; color: var(--off-white);
+    margin-bottom: 0.5rem; max-width: 780px;
+  }
+  .hero-headline em { font-style: italic; color: var(--teal); }
+  .hero-tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400; font-size: 0.95rem;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 2.6rem; margin-top: 0.4rem;
+  }
+  .hero-tagline span { color: var(--gold); margin: 0 0.6rem; opacity: 0.7; }
+  .hero-intro {
+    font-weight: 300; font-size: 1.08rem; line-height: 1.78;
+    color: var(--slate-light); max-width: 580px; margin-bottom: 3.2rem;
+  }
+  .hero-cta { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+
+  .btn-primary {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.76rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.9rem 2.4rem;
+    background: var(--blue); color: #fff;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--teal); transform: translateY(-1px); }
+  .btn-ghost {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.76rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.9rem 2.4rem;
+    background: transparent; color: var(--slate-light);
+    text-decoration: none; border: 1px solid rgba(178,196,211,0.3);
+    transition: border-color 0.2s, color 0.2s; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+  .hero-logo-bg {
+    position: absolute; right: 2rem; bottom: 3rem;
+    width: 360px; height: auto; opacity: 0.04;
+    pointer-events: none; filter: brightness(10);
+  }
+
+  /* ── SHARED ── */
+  section { scroll-margin-top: 70px; }
+  .section-inner { max-width: 1200px; margin: 0 auto; padding: 6rem 3rem; }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.66rem;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 0.9rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after { content: ''; display: block; width: 28px; height: 1px; background: var(--blue); }
+  .section-label.light { color: var(--teal); }
+  .section-label.light::after { background: var(--teal); }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300; font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.1; color: var(--navy); margin-bottom: 1.5rem;
+  }
+  .section-title em { font-style: italic; color: var(--blue); }
+  .section-title.light { color: var(--off-white); }
+  .section-title.light em { color: var(--teal); }
+
+  /* ── ABOUT ── */
+  #about { background: var(--off-white); border-top: 1px solid var(--slate-light); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .about-text p { font-size: 1.04rem; line-height: 1.82; color: var(--text-mid); margin-bottom: 1.4rem; font-weight: 300; }
+  .leader-card {
+    background: var(--navy); color: var(--off-white);
+    padding: 2.8rem; position: relative; overflow: hidden;
+  }
+  .leader-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+  }
+  .leader-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500; font-size: 1.65rem;
+    color: var(--off-white); margin-bottom: 0.25rem; line-height: 1.1;
+  }
+  .leader-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400; font-size: 0.68rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 1.6rem;
+  }
+  .leader-bio { font-size: 0.9rem; line-height: 1.78; color: var(--slate-light); font-weight: 300; }
+  .leader-card-logo {
+    position: absolute; bottom: 1.5rem; right: 1.5rem;
+    width: 72px; height: auto; opacity: 0.07; filter: brightness(10);
+  }
+
+  /* ── SERVICES ── */
+  #services { background: var(--warm-white); }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1.5px; background: var(--slate-light); margin-top: 3rem;
+  }
+  .service-card {
+    background: var(--warm-white); padding: 2.6rem;
+    position: relative; overflow: hidden; transition: background 0.25s;
+  }
+  .service-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--blue); transition: background 0.25s;
+  }
+  .service-card:hover { background: var(--navy); }
+  .service-card:hover::before { background: var(--gold); }
+  .service-card:hover .service-title { color: var(--off-white); }
+  .service-card:hover .service-desc { color: var(--slate-light); }
+  .service-card:hover .service-list li { color: var(--slate-light); border-left-color: var(--teal); }
+  .service-number { display: none; }
+  .service-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500; font-size: 1.5rem; line-height: 1.18;
+    color: var(--navy); margin-bottom: 0.85rem; transition: color 0.25s;
+  }
+  .service-desc {
+    font-size: 0.9rem; line-height: 1.72; color: var(--text-mid);
+    margin-bottom: 1.2rem; font-weight: 300; transition: color 0.25s;
+  }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 0.42rem; }
+  .service-list li {
+    font-size: 0.82rem; color: var(--text-mid); font-weight: 400;
+    padding-left: 0.9rem; border-left: 2px solid var(--blue);
+    transition: color 0.25s, border-left-color 0.25s;
+  }
+
+  /* ── FOCUS ── */
+  #focus { background: var(--navy); }
+  .focus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .focus-card {
+    border: 1px solid rgba(76,162,181,0.2); padding: 2.2rem;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .focus-card:hover { border-color: rgba(76,162,181,0.55); background: rgba(38,126,179,0.12); }
+  .focus-icon { font-size: 1.4rem; margin-bottom: 1.1rem; line-height: 1; color: var(--teal); }
+  .focus-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500; font-size: 1.22rem; line-height: 1.2;
+    color: var(--off-white); margin-bottom: 0.4rem;
+  }
+  .focus-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem; opacity: 0.8;
+  }
+  .focus-desc { font-size: 0.87rem; line-height: 1.66; color: var(--slate); font-weight: 300; margin-bottom: 1.2rem; }
+  .focus-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .focus-list li { font-size: 0.8rem; color: var(--slate); font-weight: 300; padding-left: 1rem; position: relative; }
+  .focus-list li::before { content: '→'; position: absolute; left: 0; color: var(--teal); font-size: 0.7rem; }
+
+  /* ── INSIGHTS ── */
+  #insights { background: var(--off-white); }
+  .insights-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+  .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .empty-state {
+    grid-column: 1 / -1; text-align: center;
+    padding: 4rem 2rem; border: 1px dashed var(--slate-light);
+  }
+  .empty-state p { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.25rem; color: var(--slate); margin-bottom: 0.5rem; }
+  .empty-state span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--slate-light); }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--navy-dark); }
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .contact-text p { font-size: 1.04rem; line-height: 1.8; color: var(--slate-light); font-weight: 300; margin-bottom: 2rem; }
+  .contact-detail { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1.5rem; }
+  .contact-detail-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal); }
+  .contact-detail-value { font-size: 0.95rem; color: var(--slate-light); }
+  .contact-detail-value a { color: var(--slate-light); text-decoration: none; }
+  .contact-detail-value a:hover { color: var(--teal); }
+  .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate); }
+  .form-input, .form-textarea {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(178,196,211,0.25);
+    color: var(--off-white); padding: 0.8rem 1rem;
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem; font-weight: 300;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: rgba(178,196,211,0.35); }
+  .form-input:focus, .form-textarea:focus { border-color: var(--teal); }
+  .form-textarea { resize: vertical; min-height: 120px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #080f1a; padding: 2.2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(76,162,181,0.15);
+  }
+  .footer-logo img { height: 38px; width: auto; filter: brightness(0) invert(1); opacity: 0.5; }
+  .footer-copy { font-family: 'Barlow Condensed', sans-serif; font-size: 0.63rem; letter-spacing: 0.12em; color: rgba(178,196,211,0.4); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-eyebrow { animation: fadeUp 0.65s ease both; }
+  .hero-headline { animation: fadeUp 0.65s 0.1s ease both; }
+  .hero-tagline  { animation: fadeUp 0.65s 0.2s ease both; }
+  .hero-intro    { animation: fadeUp 0.65s 0.3s ease both; }
+  .hero-cta      { animation: fadeUp 0.65s 0.4s ease both; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0.9rem 1.5rem; }
+    .nav-links { display: none; }
+    .section-inner { padding: 4rem 1.5rem; }
+    .about-grid, .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .services-grid, .focus-grid, .insights-grid { grid-template-columns: 1fr; }
+    .hero-content { padding: 3rem 1.5rem 5rem; }
+    .hero-logo-bg { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .insights-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#home" class="nav-logo">
+    <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="Waypoint Alignment Strategies">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#focus">Focus Areas</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="home">
+  <div class="hero-accent-bar"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Strategic Advisory</div>
+    <h1 class="hero-headline">Keeping complex systems on a <em>viable path forward</em></h1>
+    <p class="hero-intro">
+      Aligning policy, infrastructure, and stakeholders across energy, transportation, and public systems.
+    </p>
+    <div class="hero-cta">
+      <a href="#services" class="btn-primary">Our Services</a>
+      <a href="#contact" class="btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+  <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="" class="hero-logo-bg" aria-hidden="true">
+</section>
+
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-text">
+        <div class="section-label">About the Firm</div>
+        <h2 class="section-title">Navigating Complex<br><em>Systems & Policy</em></h2>
+        <p>Waypoint Alignment is a strategic advisory firm helping institutions navigate complex infrastructure systems where policy, operations, and stakeholder interests intersect.</p>
+        <p>In these systems, success depends less on any single decision than on maintaining alignment as conditions change across agencies, jurisdictions, and sectors—often with competing priorities pulling in different directions.</p>
+      </div>
+      <div class="leader-card">
+        <div class="section-label light">Signature Idea</div>
+        <div class="leader-name">From Fragmentation<br>to Alignment</div>
+        <div class="leader-title" style="margin-bottom: 1.2rem;">The Challenge of Complex Systems</div>
+        <p class="leader-bio" style="margin-bottom: 1rem;">Complex systems tend toward fragmentation.</p>
+        <p class="leader-bio" style="margin-bottom: 1rem;">Different institutions, incentives, and timelines pull in different directions—often gradually, and often invisibly.</p>
+        <p class="leader-bio" style="margin-bottom: 1rem;">The role of strategy isn't just to set direction, but to maintain alignment as those forces evolve.</p>
+        <p class="leader-bio">Waypoint Alignment helps institutions move from fragmentation to coordinated, sustained progress.</p>
+        <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="" class="leader-card-logo" aria-hidden="true">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="section-inner">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">Services</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-number">01</div>
+        <div class="service-title">Policy Strategy & Advisory</div>
+        <p class="service-desc">Policy doesn't operate in theory—it operates through institutions, incentives, and timing. We help clients navigate policy as it actually works, not as it is written:</p>
+        <ul class="service-list">
+          <li>Policy analysis and positioning</li>
+          <li>Regulatory and legislative strategy</li>
+          <li>Identifying viable paths forward within real-world constraints</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <div class="service-number">02</div>
+        <div class="service-title">Stakeholder Alignment</div>
+        <p class="service-desc">Alignment is often the difference between momentum and gridlock. In complex systems, stakeholders rarely start aligned—and often have competing incentives. We help bring those interests into workable alignment:</p>
+        <ul class="service-list">
+          <li>Building and coordinating coalitions</li>
+          <li>Aligning stakeholders across jurisdictions and sectors</li>
+          <li>Developing messaging that holds across audiences</li>
+          <li>Anticipating and managing points of friction</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <div class="service-number">03</div>
+        <div class="service-title">Infrastructure & Systems Strategy</div>
+        <p class="service-desc">Complex systems don't fail for lack of ideas—they fail when design, policy, and operations fall out of alignment. We translate complexity into strategies that can hold under real-world conditions:</p>
+        <ul class="service-list">
+          <li>Aviation systems and airspace modernization</li>
+          <li>Energy systems and grid architecture</li>
+          <li>Bridging technical design with policy and operational realities</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <div class="service-number">04</div>
+        <div class="service-title">Strategic Communications</div>
+        <p class="service-desc">If it isn't understood, it won't move. We help shape how complex issues are communicated—so they can be acted on:</p>
+        <ul class="service-list">
+          <li>Thought leadership and positioning</li>
+          <li>Executive messaging</li>
+          <li>Translating technical issues for decision-makers and the public</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="focus">
+  <div class="section-inner">
+    <div class="section-label light">Where We Work</div>
+    <h2 class="section-title light">Focus <em>Areas</em></h2>
+    <div class="focus-grid">
+      <div class="focus-card">
+        <div class="focus-icon">⚡</div>
+        <div class="focus-title">Energy & Grid Architecture</div>
+        <div class="focus-sub">Centralized to Distributed Systems</div>
+        <p class="focus-desc">A system shifting from centralized to distributed—and from static to dynamic.</p>
+        <ul class="focus-list">
+          <li>Grid modernization and planning</li>
+          <li>Distributed energy resources (DERs)</li>
+          <li>Aligning innovation with regulatory frameworks</li>
+        </ul>
+      </div>
+      <div class="focus-card">
+        <div class="focus-icon">✈</div>
+        <div class="focus-title">Aviation & Airspace Systems</div>
+        <div class="focus-sub">Precision Operations & Upstream Alignment</div>
+        <p class="focus-desc">Systems where precision operations depend on upstream alignment.</p>
+        <ul class="focus-list">
+          <li>Air traffic control modernization</li>
+          <li>Airport infrastructure and funding</li>
+          <li>Regional and rural aviation networks</li>
+        </ul>
+      </div>
+      <div class="focus-card">
+        <div class="focus-icon">◎</div>
+        <div class="focus-title">Emerging Technology & Public Systems</div>
+        <div class="focus-sub">Where Innovation Outpaces Institutions</div>
+        <p class="focus-desc">Where innovation moves faster than institutions.</p>
+        <ul class="focus-list">
+          <li>Policy pathways for new technologies</li>
+          <li>Institutional adoption strategies</li>
+          <li>Bridging technical and governance perspectives</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="insights">
+  <div class="section-inner">
+    <div class="insights-header">
+      <div>
+        <div class="section-label">Perspectives</div>
+        <h2 class="section-title">Insights</h2>
+      </div>
+    </div>
+    <div class="insights-grid">
+      <div class="empty-state">
+        <p>Insights coming soon.</p>
+        <span>Articles and perspectives will be published here.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-layout">
+      <div class="contact-text">
+        <div class="section-label light">Get in Touch</div>
+        <h2 class="section-title light">Let's <em>Connect</em></h2>
+        <p>Waypoint Alignment works with institutions navigating complex policy and infrastructure challenges. If you're working on something that sits at the intersection of systems, stakeholders, and strategy—we'd like to hear about it.</p>
+        <div class="contact-detail">
+          <span class="contact-detail-label">Email</span>
+          <span class="contact-detail-value"><a href="/cdn-cgi/l/email-protection#6e070008012e190f171e0107001a0f02070900030b001a400d0103"><span class="__cf_email__" data-cfemail="91f8fff7fed1e6f0e8e1fef8ffe5f0fdf8f6fffcf4ffe5bff2fefc">[email&#160;protected]</span></a></span>
+        </div>
+      </div>
+      <div class="contact-form">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-input" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organization</label>
+          <input type="text" class="form-input" placeholder="Your organization">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Tell us about your challenge or initiative..."></textarea>
+        </div>
+        <button class="btn-primary">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">
+    <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="Waypoint Alignment
