@@ -496,14 +496,95 @@
         <h2 class="section-title">Insights</h2>
       </div>
     </div>
-    <div class="insights-grid">
-      <div class="empty-state">
-        <p>Insights coming soon.</p>
-        <span>Articles and perspectives will be published here.</span>
-      </div>
+    <div class="insights-grid" id="insightsGrid">
+      <!-- populated by JS -->
     </div>
   </div>
 </section>
+
+<!-- Article modal -->
+<div class="article-overlay" id="articleOverlay">
+  <div class="article-modal">
+    <div class="article-modal-bar"></div>
+    <button class="article-modal-close" id="articleClose">Close</button>
+    <div class="article-modal-body">
+      <div class="article-modal-meta">
+        <span class="article-modal-tag" id="modalTag"></span>
+        <span class="article-modal-date" id="modalDate"></span>
+      </div>
+      <div class="article-modal-title" id="modalTitle"></div>
+      <div class="article-modal-content" id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'waypoint_articles';
+
+  function getArticles() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function openArticle(id) {
+    const articles = getArticles();
+    const a = articles.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('modalTag').textContent = a.category || '';
+    document.getElementById('modalDate').textContent = formatDate(a.date);
+    document.getElementById('modalTitle').textContent = a.title;
+    document.getElementById('modalContent').textContent = a.body;
+    document.getElementById('articleOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeArticle() {
+    document.getElementById('articleOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('articleClose').addEventListener('click', closeArticle);
+  document.getElementById('articleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeArticle();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeArticle();
+  });
+
+  function renderInsights() {
+    const grid = document.getElementById('insightsGrid');
+    const articles = getArticles().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    if (articles.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <p>Insights coming soon.</p>
+          <span>Articles and perspectives will be published here.</span>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = articles.map(a => `
+      <div class="insight-card">
+        <div class="insight-stripe"></div>
+        <div class="insight-body">
+          <div class="insight-meta">
+            ${a.category ? `<span class="insight-tag">${a.category}</span>` : ''}
+            <span class="insight-date">${formatDate(a.date)}</span>
+          </div>
+          <div class="insight-title">${a.title}</div>
+          <div class="insight-excerpt">${a.excerpt}</div>
+          <button class="insight-read-more" onclick="openArticle('${a.id}')">Read more</button>
+        </div>
+      </div>`).join('');
+  }
+
+  renderInsights();
+</script>
 
 <section id="contact">
   <div class="section-inner">
