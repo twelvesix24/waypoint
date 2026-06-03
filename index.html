@@ -268,13 +268,93 @@
   #insights { background: var(--off-white); }
   .insights-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
   .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .empty-state {
-    grid-column: 1 / -1; text-align: center;
-    padding: 4rem 2rem; border: 1px dashed var(--slate-light);
-  }
-  .empty-state p { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.25rem; color: var(--slate); margin-bottom: 0.5rem; }
-  .empty-state span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--slate-light); }
+.empty-state {
+  grid-column: 1 / -1; text-align: center;
+  padding: 4rem 2rem; border: 1px dashed var(--slate-light);
+}
+.empty-state p { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.25rem; color: var(--slate); margin-bottom: 0.5rem; }
+.empty-state span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--slate-light); }
 
+.insight-card {
+  background: var(--warm-white); border: 1px solid var(--slate-light);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.insight-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(22,46,80,0.1); }
+.insight-stripe { height: 3px; background: linear-gradient(90deg, var(--blue), var(--teal)); flex-shrink: 0; }
+.insight-body { padding: 1.6rem; display: flex; flex-direction: column; flex: 1; }
+.insight-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 0.7rem; }
+.insight-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--blue);
+}
+.insight-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.insight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 1.18rem; line-height: 1.28;
+  color: var(--navy); margin-bottom: 0.7rem;
+}
+.insight-excerpt {
+  font-size: 0.84rem; line-height: 1.66;
+  color: var(--text-mid); font-weight: 300; margin-bottom: 1.2rem; flex: 1;
+}
+.insight-read-more {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--blue); background: none; border: none;
+  cursor: pointer; padding: 0; text-align: left;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.insight-read-more:hover { color: var(--teal); }
+.insight-read-more::after { content: '→'; }
+
+.article-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(13,30,54,0.75); backdrop-filter: blur(6px);
+  align-items: flex-start; justify-content: center;
+  padding: 4rem 1.5rem; overflow-y: auto;
+}
+.article-overlay.open { display: flex; }
+.article-modal {
+  background: var(--warm-white); max-width: 740px; width: 100%;
+  position: relative; margin: auto;
+}
+.article-modal-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+.article-modal-body { padding: 3rem; }
+.article-modal-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.2rem; }
+.article-modal-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue);
+}
+.article-modal-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.article-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.12; color: var(--navy); margin-bottom: 1.6rem;
+}
+.article-modal-content {
+  font-size: 0.97rem; line-height: 1.85; color: var(--text-mid); font-weight: 300;
+  white-space: pre-wrap;
+}
+.article-modal-close {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--slate); display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.article-modal-close:hover { color: var(--navy); }
+.article-modal-close::before { content: '✕'; font-size: 0.8rem; }
   /* ── CONTACT ── */
   #contact { background: var(--navy-dark); }
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
