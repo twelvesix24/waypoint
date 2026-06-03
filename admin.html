@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insights Admin — Waypoint Alignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:        #162e50;
+    --navy-dark:   #0d1e36;
+    --blue:        #267eb3;
+    --teal:        #4ca2b5;
+    --slate:       #728196;
+    --slate-light: #b2c4d3;
+    --gold:        #ffd27f;
+    --off-white:   #f5f7f9;
+    --warm-white:  #fafbfc;
+    --text-mid:    #445568;
+    --red:         #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--off-white);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    padding: 0 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--gold), var(--teal)) 1;
+  }
+  .header-logo {
+    display: flex; align-items: center;
+  }
+  .header-logo img { height: 40px; width: auto; filter: brightness(0) invert(1); opacity: 0.88; }
+  .header-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.7rem;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--teal); margin-left: 1.5rem; padding-left: 1.5rem;
+    border-left: 1px solid rgba(76,162,181,0.35);
+  }
+  .header-back {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--slate-light); text-decoration: none;
+    display: flex; align-items: center; gap: 0.4rem;
+    transition: color 0.2s;
+  }
+  .header-back::before { content: '←'; }
+  .header-back:hover { color: var(--teal); }
+
+  /* ── LAYOUT ── */
+  .admin-layout {
+    max-width: 1100px; margin: 0 auto;
+    padding: 3rem 2rem;
+    display: grid; grid-template-columns: 1fr 380px; gap: 3rem; align-items: start;
+  }
+
+  /* ── FORM PANEL ── */
+  .form-panel {
+    background: white; border: 1px solid var(--slate-light);
+    position: relative; overflow: hidden;
+  }
+  .form-panel-bar { height: 3px; background: linear-gradient(90deg, var(--blue), var(--teal)); }
+  .form-panel-body { padding: 2rem; }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400; font-size: 1.5rem;
+    color: var(--navy); margin-bottom: 1.6rem;
+  }
+  .panel-title em { font-style: italic; color: var(--blue); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
+  .form-group:last-of-type { margin-bottom: 0; }
+
+  .form-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .form-label span { color: var(--blue); margin-left: 0.2rem; }
+
+  .form-input, .form-textarea, .form-select {
+    background: var(--off-white);
+    border: 1px solid var(--slate-light);
+    color: var(--navy); padding: 0.75rem 1rem;
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem; font-weight: 300;
+    outline: none; transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--blue); }
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-textarea.body-area { min-height: 260px; }
+  .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23728196' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+
+  .char-count {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem; color: var(--slate); text-align: right; margin-top: 0.2rem;
+  }
+  .char-count.warn { color: var(--red); }
+
+  .form-actions { display: flex; gap: 1rem; margin-top: 1.8rem; align-items: center; }
+
+  .btn-primary {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.76rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    background: var(--blue); color: #fff;
+    border: none; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--teal); }
+  .btn-primary:disabled { background: var(--slate-light); cursor: not-allowed; }
+
+  .btn-ghost {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500; font-size: 0.76rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.85rem 1.8rem;
+    background: transparent; color: var(--slate);
+    border: 1px solid var(--slate-light); cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--slate); color: var(--navy); }
+
+  .save-status {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.1em;
+    color: var(--teal); opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .save-status.visible { opacity: 1; }
+
+  /* ── ARTICLE LIST ── */
+  .list-panel {
+    background: white; border: 1px solid var(--slate-light);
+    position: sticky; top: 2rem;
+  }
+  .list-panel-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+  .list-panel-header {
+    padding: 1.4rem 1.6rem;
+    border-bottom: 1px solid var(--off-white);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .list-panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.72rem;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--navy);
+  }
+  .list-count {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem; color: var(--slate); letter-spacing: 0.08em;
+  }
+
+  .article-list { max-height: 520px; overflow-y: auto; }
+  .article-list::-webkit-scrollbar { width: 4px; }
+  .article-list::-webkit-scrollbar-track { background: var(--off-white); }
+  .article-list::-webkit-scrollbar-thumb { background: var(--slate-light); }
+
+  .article-item {
+    padding: 1.1rem 1.6rem;
+    border-bottom: 1px solid var(--off-white);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .article-item:hover { background: var(--off-white); }
+  .article-item.active { background: #eef4fb; border-left: 3px solid var(--blue); }
+  .article-item-info { flex: 1; min-width: 0; }
+  .article-item-title {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 500; font-size: 0.88rem;
+    color: var(--navy); margin-bottom: 0.2rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .article-item-meta {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.1em; color: var(--slate);
+  }
+  .article-item-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .btn-icon {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.3rem 0.5rem; transition: color 0.15s;
+  }
+  .btn-icon.edit { color: var(--blue); }
+  .btn-icon.edit:hover { color: var(--teal); }
+  .btn-icon.delete { color: var(--slate-light); }
+  .btn-icon.delete:hover { color: var(--red); }
+
+  .list-empty {
+    padding: 2.5rem 1.6rem; text-align: center;
+    font-family: 'Barlow', sans-serif; font-size: 0.84rem;
+    color: var(--slate); font-weight: 300;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .admin-layout { grid-template-columns: 1fr; }
+    .list-panel { position: static; }
+    header { padding: 0 1.5rem; }
+    .admin-layout { padding: 2rem 1.2rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="Waypoint Alignment Strategies">
+    <span class="header-label">Insights Admin</span>
+  </div>
+  <a href="index.html" class="header-back">Back to site</a>
+</header>
+
+<div class="admin-layout">
+
+  <!-- FORM -->
+  <div class="form-panel">
+    <div class="form-panel-bar"></div>
+    <div class="form-panel-body">
+      <div class="panel-title" id="formTitle">Add <em>New Article</em></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Title <span>*</span></label>
+          <input type="text" class="form-input" id="fieldTitle" placeholder="Article title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date <span>*</span></label>
+          <input type="date" class="form-input" id="fieldDate">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="fieldCategory">
+          <option value="">— Select a category —</option>
+          <option value="Energy & Grid">Energy & Grid</option>
+          <option value="Aviation & Airspace">Aviation & Airspace</option>
+          <option value="Emerging Technology">Emerging Technology</option>
+          <option value="Policy & Regulation">Policy & Regulation</option>
+          <option value="Stakeholder Strategy">Stakeholder Strategy</option>
+          <option value="Infrastructure">Infrastructure</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Excerpt / Teaser <span>*</span></label>
+        <textarea class="form-textarea" id="fieldExcerpt" placeholder="A short teaser shown on the card (2–3 sentences)." maxlength="300" oninput="updateCount('fieldExcerpt','excerptCount',300)"></textarea>
+        <div class="char-count" id="excerptCount">0 / 300</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Full Article Body <span>*</span></label>
+        <textarea class="form-textarea body-area" id="fieldBody" placeholder="Paste or write the full article text here. Line breaks will be preserved."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" id="saveBtn" onclick="saveArticle()">Publish Article</button>
+        <button class="btn-ghost" id="cancelBtn" onclick="cancelEdit()" style="display:none">Cancel Edit</button>
+        <span class="save-status" id="saveStatus">Saved.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLE LIST -->
+  <div class="list-panel">
+    <div class="list-panel-bar"></div>
+    <div class="list-panel-header">
+      <span class="list-panel-title">Published Articles</span>
+      <span class="list-count" id="listCount">0 articles</span>
+    </div>
+    <div class="article-list" id="articleList"></div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'waypoint_articles';
+  let editingId = null;
+
+  function getArticles() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveArticles(arr) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+  }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+
+  function updateCount(fieldId, countId, max) {
+    const len = document.getElementById(fieldId).value.length;
+    const el = document.getElementById(countId);
+    el.textContent = `${len} / ${max}`;
+    el.classList.toggle('warn', len > max * 0.9);
+  }
+
+  function renderList() {
+    const articles = getArticles().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const list = document.getElementById('articleList');
+    const count = document.getElementById('listCount');
+    count.textContent = `${articles.length} article${articles.length !== 1 ? 's' : ''}`;
+    if (articles.length === 0) {
+      list.innerHTML = '<div class="list-empty">No articles yet. Add one using the form.</div>';
+      return;
+    }
+    list.innerHTML = articles.map(a => `
+      <div class="article-item${editingId === a.id ? ' active' : ''}" id="item-${a.id}">
+        <div class="article-item-info" onclick="editArticle('${a.id}')">
+          <div class="article-item-title">${a.title || 'Untitled'}</div>
+          <div class="article-item-meta">${a.category ? a.category + ' · ' : ''}${formatDate(a.date)}</div>
+        </div>
+        <div class="article-item-actions">
+          <button class="btn-icon edit" onclick="editArticle('${a.id}')">Edit</button>
+          <button class="btn-icon delete" onclick="deleteArticle('${a.id}')">Del</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function saveArticle() {
+    const title   = document.getElementById('fieldTitle').value.trim();
+    const date    = document.getElementById('fieldDate').value;
+    const category = document.getElementById('fieldCategory').value;
+    const excerpt = document.getElementById('fieldExcerpt').value.trim();
+    const body    = document.getElementById('fieldBody').value.trim();
+
+    if (!title || !date || !excerpt || !body) {
+      alert('Please fill in all required fields (Title, Date, Excerpt, Body).');
+      return;
+    }
+
+    const articles = getArticles();
+
+    if (editingId) {
+      const idx = articles.findIndex(a => a.id === editingId);
+      if (idx > -1) articles[idx] = { id: editingId, title, date, category, excerpt, body };
+    } else {
+      articles.push({ id: uid(), title, date, category, excerpt, body });
+    }
+
+    saveArticles(articles);
+    showStatus();
+    resetForm();
+    renderList();
+  }
+
+  function editArticle(id) {
+    const articles = getArticles();
+    const a = articles.find(x => x.id === id);
+    if (!a) return;
+    editingId = id;
+    document.getElementById('fieldTitle').value    = a.title || '';
+    document.getElementById('fieldDate').value     = a.date || '';
+    document.getElementById('fieldCategory').value = a.category || '';
+    document.getElementById('fieldExcerpt').value  = a.excerpt || '';
+    document.getElementById('fieldBody').value     = a.body || '';
+    updateCount('fieldExcerpt', 'excerptCount', 300);
+    document.getElementById('formTitle').innerHTML = 'Edit <em>Article</em>';
+    document.getElementById('saveBtn').textContent = 'Save Changes';
+    document.getElementById('cancelBtn').style.display = 'inline-block';
+    renderList();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function deleteArticle(id) {
+    if (!confirm('Delete this article? This cannot be undone.')) return;
+    const articles = getArticles().filter(a => a.id !== id);
+    saveArticles(articles);
+    if (editingId === id) resetForm();
+    renderList();
+  }
+
+  function cancelEdit() {
+    resetForm();
+    renderList();
+  }
+
+  function resetForm() {
+    editingId = null;
+    document.getElementById('fieldTitle').value    = '';
+    document.getElementById('fieldDate').value     = '';
+    document.getElementById('fieldCategory').value = '';
+    document.getElementById('fieldExcerpt').value  = '';
+    document.getElementById('fieldBody').value     = '';
+    updateCount('fieldExcerpt', 'excerptCount', 300);
+    document.getElementById('formTitle').innerHTML = 'Add <em>New Article</em>';
+    document.getElementById('saveBtn').textContent = 'Publish Article';
+    document.getElementById('cancelBtn').style.display = 'none';
+  }
+
+  function showStatus() {
+    const el = document.getElementById('saveStatus');
+    el.classList.add('visible');
+    setTimeout(() => el.classList.remove('visible'), 2200);
+  }
+
+  // Set today's date as default
+  document.getElementById('fieldDate').value = new Date().toISOString().split('T')[0];
+  renderList();
+</script>
+</body>
+</html>
