@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waypoint Alignment Strategies</title>
+<link rel="icon" type="image/png" href="Waypoint_Compass.png">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HFGR4W0T4Z"></script>
 <script>
@@ -9,9 +13,7 @@
   gtag('js', new Date());
   gtag('config', 'G-HFGR4W0T4Z');
 </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Waypoint Alignment Strategies</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -49,10 +51,11 @@
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(76,162,181,0.2);
   }
-  .nav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-logo { background: radial-gradient(circle, rgba(255,210,127,0.25) 40%, transparent 75%);
+  padding: 4px 8px;
+  border-radius: 4px; display: flex; align-items: center; text-decoration: none; }
   .nav-logo img {
-    height: 50px; width: auto; object-fit: contain;
-    filter: brightness(0) invert(1); opacity: 0.9;
+    height: 100px; width: auto; object-fit: contain;
   }
   .nav-links { display: flex; gap: 2.4rem; list-style: none; }
   .nav-links a {
@@ -275,13 +278,174 @@
   #insights { background: var(--off-white); }
   .insights-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
   .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .empty-state {
-    grid-column: 1 / -1; text-align: center;
-    padding: 4rem 2rem; border: 1px dashed var(--slate-light);
-  }
-  .empty-state p { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.25rem; color: var(--slate); margin-bottom: 0.5rem; }
-  .empty-state span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--slate-light); }
+.empty-state {
+  grid-column: 1 / -1; text-align: center;
+  padding: 4rem 2rem; border: 1px dashed var(--slate-light);
+}
+.empty-state p { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.25rem; color: var(--slate); margin-bottom: 0.5rem; }
+.empty-state span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--slate-light); }
 
+.insight-card {
+  background: var(--warm-white); border: 1px solid var(--slate-light);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.insight-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(22,46,80,0.1); }
+.insight-stripe { height: 3px; background: linear-gradient(90deg, var(--blue), var(--teal)); flex-shrink: 0; }
+.insight-body { padding: 1.6rem; display: flex; flex-direction: column; flex: 1; }
+.insight-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 0.7rem; }
+.insight-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--blue);
+}
+.insight-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.insight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 1.18rem; line-height: 1.28;
+  color: var(--navy); margin-bottom: 0.7rem;
+}
+.insight-excerpt {
+  font-size: 0.84rem; line-height: 1.66;
+  color: var(--text-mid); font-weight: 300; margin-bottom: 1.2rem; flex: 1;
+}
+.insight-read-more {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--blue); background: none; border: none;
+  cursor: pointer; padding: 0; text-align: left;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.insight-read-more:hover { color: var(--teal); }
+.insight-read-more::after { content: '→'; }
+
+.article-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(13,30,54,0.75); backdrop-filter: blur(6px);
+  align-items: flex-start; justify-content: center;
+  padding: 4rem 1.5rem; overflow-y: auto;
+}
+.article-overlay.open { display: flex; }
+.article-modal {
+  background: var(--warm-white); max-width: 740px; width: 100%;
+  position: relative; margin: auto;
+}
+.article-modal-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+.article-modal-body { padding: 3rem; }
+.article-modal-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.2rem; }
+.article-modal-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue);
+}
+.article-modal-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.article-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.12; color: var(--navy); margin-bottom: 1.6rem;
+}
+.article-modal-content {
+  font-size: 0.97rem; line-height: 1.85; color: var(--text-mid); font-weight: 300;
+}
+.article-modal-content p { margin-bottom: 1rem; }
+.article-modal-close {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--slate); display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.article-modal-close:hover { color: var(--navy); }
+.article-modal-close::before { content: '✕'; font-size: 0.8rem; }
+
+.insight-card {
+  background: var(--warm-white); border: 1px solid var(--slate-light);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.insight-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(22,46,80,0.1); }
+.insight-stripe { height: 3px; background: linear-gradient(90deg, var(--blue), var(--teal)); flex-shrink: 0; }
+.insight-body { padding: 1.6rem; display: flex; flex-direction: column; flex: 1; }
+.insight-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 0.7rem; }
+.insight-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--blue);
+}
+.insight-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.insight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 1.18rem; line-height: 1.28;
+  color: var(--navy); margin-bottom: 0.7rem;
+}
+.insight-excerpt {
+  font-size: 0.84rem; line-height: 1.66;
+  color: var(--text-mid); font-weight: 300; margin-bottom: 1.2rem; flex: 1;
+}
+.insight-read-more {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--blue); background: none; border: none;
+  cursor: pointer; padding: 0; text-align: left;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.insight-read-more:hover { color: var(--teal); }
+.insight-read-more::after { content: '→'; }
+
+.article-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(13,30,54,0.75); backdrop-filter: blur(6px);
+  align-items: flex-start; justify-content: center;
+  padding: 4rem 1.5rem; overflow-y: auto;
+}
+.article-overlay.open { display: flex; }
+.article-modal {
+  background: var(--warm-white); max-width: 740px; width: 100%;
+  position: relative; margin: auto;
+}
+.article-modal-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+.article-modal-body { padding: 3rem; }
+.article-modal-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.2rem; }
+.article-modal-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue);
+}
+.article-modal-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.article-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.12; color: var(--navy); margin-bottom: 1.6rem;
+}
+.article-modal-content {
+  font-size: 0.97rem; line-height: 1.85; color: var(--text-mid); font-weight: 300;
+  white-space: pre-wrap;
+}
+.article-modal-close {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--slate); display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.article-modal-close:hover { color: var(--navy); }
+.article-modal-close::before { content: '✕'; font-size: 0.8rem; }
   /* ── CONTACT ── */
   #contact { background: var(--navy-dark); }
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
@@ -311,7 +475,7 @@
     display: flex; justify-content: space-between; align-items: center;
     border-top: 1px solid rgba(76,162,181,0.15);
   }
-  .footer-logo img { height: 38px; width: auto; filter: brightness(0) invert(1); opacity: 0.5; }
+  .footer-logo img { height: 38px; width: auto; }
   .footer-copy { font-family: 'Barlow Condensed', sans-serif; font-size: 0.63rem; letter-spacing: 0.12em; color: rgba(178,196,211,0.4); }
 
   /* ── ANIMATIONS ── */
@@ -518,12 +682,29 @@
   </div>
 </div>
 
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
-  const STORAGE_KEY = 'waypoint_articles';
+  function parseMarkdown(md) {
+    if (!md) return '';
+    return md
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .split(/\n\n+/)
+      .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
+      .join('');
+  }
 
-  function getArticles() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
+  function parseFrontmatter(text) {
+    const match = text.match(/^---\n([\s\S]+?)\n---\n?([\s\S]*)$/);
+    if (!match) return { data: {}, body: text };
+    const data = {};
+    match[1].split('\n').forEach(line => {
+      const [key, ...rest] = line.split(':');
+      if (key) data[key.trim()] = rest.join(':').trim().replace(/^["']|["']$/g, '');
+    });
+    return { data, body: match[2].trim() };
   }
 
   function formatDate(iso) {
@@ -532,14 +713,15 @@
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
-  function openArticle(id) {
-    const articles = getArticles();
-    const a = articles.find(x => x.id === id);
+  let loadedArticles = [];
+
+  function openArticle(idx) {
+    const a = loadedArticles[idx];
     if (!a) return;
     document.getElementById('modalTag').textContent = a.category || '';
     document.getElementById('modalDate').textContent = formatDate(a.date);
     document.getElementById('modalTitle').textContent = a.title;
-    document.getElementById('modalContent').textContent = a.body;
+    document.getElementById('modalContent').innerHTML = parseMarkdown(a.body);
     document.getElementById('articleOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -557,10 +739,9 @@
     if (e.key === 'Escape') closeArticle();
   });
 
-  function renderInsights() {
+  function renderInsights(articles) {
     const grid = document.getElementById('insightsGrid');
-    const articles = getArticles().slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    if (articles.length === 0) {
+    if (!articles || articles.length === 0) {
       grid.innerHTML = `
         <div class="empty-state">
           <p>Insights coming soon.</p>
@@ -568,7 +749,7 @@
         </div>`;
       return;
     }
-    grid.innerHTML = articles.map(a => `
+    grid.innerHTML = articles.map((a, idx) => `
       <div class="insight-card">
         <div class="insight-stripe"></div>
         <div class="insight-body">
@@ -578,12 +759,40 @@
           </div>
           <div class="insight-title">${a.title}</div>
           <div class="insight-excerpt">${a.excerpt}</div>
-          <button class="insight-read-more" onclick="openArticle('${a.id}')">Read more</button>
+          <button class="insight-read-more" onclick="openArticle(${idx})">Read more</button>
         </div>
       </div>`).join('');
   }
 
-  renderInsights();
+  async function loadArticles() {
+    try {
+      const res = await fetch('/_articles/index.json');
+      if (!res.ok) { renderInsights([]); return; }
+      const files = await res.json();
+      const articles = await Promise.all(files.map(async filename => {
+        const r = await fetch(`/_articles/${filename}`);
+        const text = await r.text();
+        const { data, body } = parseFrontmatter(text);
+        return { ...data, body };
+      }));
+      loadedArticles = articles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      renderInsights(loadedArticles);
+    } catch(e) {
+      renderInsights([]);
+    }
+  }
+
+  loadArticles();
+
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
 </script>
 
 <section id="contact">
@@ -598,25 +807,25 @@
           <span class="contact-detail-value"><a href="/cdn-cgi/l/email-protection#6e070008012e190f171e0107001a0f02070900030b001a400d0103"><span class="__cf_email__" data-cfemail="91f8fff7fed1e6f0e8e1fef8ffe5f0fdf8f6fffcf4ffe5bff2fefc">[email&#160;protected]</span></a></span>
         </div>
       </div>
-      <div class="contact-form">
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-input" placeholder="Your name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Organization</label>
-          <input type="text" class="form-input" placeholder="Your organization">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-input" placeholder="your@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea class="form-textarea" placeholder="Tell us about your challenge or initiative..."></textarea>
-        </div>
-        <button class="btn-primary">Send Message</button>
-      </div>
+   <form action="https://formspree.io/f/mgopjgnd" method="POST" class="contact-form">
+  <div class="form-group">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-input" placeholder="Your name">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Organization</label>
+    <input type="text" name="organization" class="form-input" placeholder="Your organization">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-input" placeholder="your@email.com">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Message</label>
+    <textarea name="message" class="form-textarea" placeholder="Tell us about your challenge or initiative..."></textarea>
+  </div>
+  <button type="submit" class="btn-primary">Send Message</button>
+</form>
     </div>
   </div>
 </section>
@@ -624,3 +833,10 @@
 <footer>
   <div class="footer-logo">
     <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="Waypoint Alignment
+ Strategies">
+  </div>
+  <span class="footer-copy">&copy; 2026 Waypoint Alignment Strategies. All rights reserved.</span>
+</footer>
+
+</body>
+</html>
