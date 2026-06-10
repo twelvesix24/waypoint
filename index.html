@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Waypoint Alignment Strategies</title>
+<link rel="icon" type="image/png" href="Waypoint_Compass.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HFGR4W0T4Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-HFGR4W0T4Z');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -343,6 +353,87 @@
 }
 .article-modal-content {
   font-size: 0.97rem; line-height: 1.85; color: var(--text-mid); font-weight: 300;
+}
+.article-modal-content p { margin-bottom: 1rem; }
+.article-modal-close {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--slate); display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.article-modal-close:hover { color: var(--navy); }
+.article-modal-close::before { content: '✕'; font-size: 0.8rem; }
+
+.insight-card {
+  background: var(--warm-white); border: 1px solid var(--slate-light);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.insight-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(22,46,80,0.1); }
+.insight-stripe { height: 3px; background: linear-gradient(90deg, var(--blue), var(--teal)); flex-shrink: 0; }
+.insight-body { padding: 1.6rem; display: flex; flex-direction: column; flex: 1; }
+.insight-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 0.7rem; }
+.insight-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--blue);
+}
+.insight-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.insight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 1.18rem; line-height: 1.28;
+  color: var(--navy); margin-bottom: 0.7rem;
+}
+.insight-excerpt {
+  font-size: 0.84rem; line-height: 1.66;
+  color: var(--text-mid); font-weight: 300; margin-bottom: 1.2rem; flex: 1;
+}
+.insight-read-more {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--blue); background: none; border: none;
+  cursor: pointer; padding: 0; text-align: left;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s;
+}
+.insight-read-more:hover { color: var(--teal); }
+.insight-read-more::after { content: '→'; }
+
+.article-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(13,30,54,0.75); backdrop-filter: blur(6px);
+  align-items: flex-start; justify-content: center;
+  padding: 4rem 1.5rem; overflow-y: auto;
+}
+.article-overlay.open { display: flex; }
+.article-modal {
+  background: var(--warm-white); max-width: 740px; width: 100%;
+  position: relative; margin: auto;
+}
+.article-modal-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+.article-modal-body { padding: 3rem; }
+.article-modal-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.2rem; }
+.article-modal-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue);
+}
+.article-modal-date {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.12em; color: var(--slate);
+}
+.article-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.12; color: var(--navy); margin-bottom: 1.6rem;
+}
+.article-modal-content {
+  font-size: 0.97rem; line-height: 1.85; color: var(--text-mid); font-weight: 300;
   white-space: pre-wrap;
 }
 .article-modal-close {
@@ -569,14 +660,140 @@
         <h2 class="section-title">Insights</h2>
       </div>
     </div>
-    <div class="insights-grid">
-      <div class="empty-state">
-        <p>Insights coming soon.</p>
-        <span>Articles and perspectives will be published here.</span>
-      </div>
+    <div class="insights-grid" id="insightsGrid">
+      <!-- populated by JS -->
     </div>
   </div>
 </section>
+
+<!-- Article modal -->
+<div class="article-overlay" id="articleOverlay">
+  <div class="article-modal">
+    <div class="article-modal-bar"></div>
+    <button class="article-modal-close" id="articleClose">Close</button>
+    <div class="article-modal-body">
+      <div class="article-modal-meta">
+        <span class="article-modal-tag" id="modalTag"></span>
+        <span class="article-modal-date" id="modalDate"></span>
+      </div>
+      <div class="article-modal-title" id="modalTitle"></div>
+      <div class="article-modal-content" id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  function parseMarkdown(md) {
+    if (!md) return '';
+    return md
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .split(/\n\n+/)
+      .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
+      .join('');
+  }
+
+  function parseFrontmatter(text) {
+    const match = text.match(/^---\n([\s\S]+?)\n---\n?([\s\S]*)$/);
+    if (!match) return { data: {}, body: text };
+    const data = {};
+    match[1].split('\n').forEach(line => {
+      const [key, ...rest] = line.split(':');
+      if (key) data[key.trim()] = rest.join(':').trim().replace(/^["']|["']$/g, '');
+    });
+    return { data, body: match[2].trim() };
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  let loadedArticles = [];
+
+  function openArticle(idx) {
+    const a = loadedArticles[idx];
+    if (!a) return;
+    document.getElementById('modalTag').textContent = a.category || '';
+    document.getElementById('modalDate').textContent = formatDate(a.date);
+    document.getElementById('modalTitle').textContent = a.title;
+    document.getElementById('modalContent').innerHTML = parseMarkdown(a.body);
+    document.getElementById('articleOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeArticle() {
+    document.getElementById('articleOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('articleClose').addEventListener('click', closeArticle);
+  document.getElementById('articleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeArticle();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeArticle();
+  });
+
+  function renderInsights(articles) {
+    const grid = document.getElementById('insightsGrid');
+    if (!articles || articles.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <p>Insights coming soon.</p>
+          <span>Articles and perspectives will be published here.</span>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = articles.map((a, idx) => `
+      <div class="insight-card">
+        <div class="insight-stripe"></div>
+        <div class="insight-body">
+          <div class="insight-meta">
+            ${a.category ? `<span class="insight-tag">${a.category}</span>` : ''}
+            <span class="insight-date">${formatDate(a.date)}</span>
+          </div>
+          <div class="insight-title">${a.title}</div>
+          <div class="insight-excerpt">${a.excerpt}</div>
+          <button class="insight-read-more" onclick="openArticle(${idx})">Read more</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function loadArticles() {
+    try {
+      const res = await fetch('/_articles/index.json');
+      if (!res.ok) { renderInsights([]); return; }
+      const files = await res.json();
+      const articles = await Promise.all(files.map(async filename => {
+        const r = await fetch(`/_articles/${filename}`);
+        const text = await r.text();
+        const { data, body } = parseFrontmatter(text);
+        return { ...data, body };
+      }));
+      loadedArticles = articles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      renderInsights(loadedArticles);
+    } catch(e) {
+      renderInsights([]);
+    }
+  }
+
+  loadArticles();
+
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 
 <section id="contact">
   <div class="section-inner">
@@ -616,3 +833,10 @@
 <footer>
   <div class="footer-logo">
     <img src="WAYPOINT_ALIGNMENT_Strategies.png" alt="Waypoint Alignment
+ Strategies">
+  </div>
+  <span class="footer-copy">&copy; 2026 Waypoint Alignment Strategies. All rights reserved.</span>
+</footer>
+
+</body>
+</html>
