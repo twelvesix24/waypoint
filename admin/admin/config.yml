@@ -1,0 +1,29 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "insights"
+    label: "Insights"
+    folder: "_articles"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - "Energy & Grid"
+          - "Aviation & Airspace"
+          - "Emerging Technology"
+          - "Policy & Regulation"
+          - "Stakeholder Strategy"
+          - "Infrastructure"
+        required: false
+      - { label: "Excerpt", name: "excerpt", widget: "text", hint: "2–3 sentence teaser shown on the card." }
+      - { label: "Body", name: "body", widget: "markdown" }
