@@ -1,7 +1,7 @@
 ---
 title: Our next governor must be ready to deliver on Maine interconnect challenges
 date: 2026-05-30
-category: null
+category: Infrastructure
 excerpt: Maine’s affordability, resilience, housing, and energy challenges are
   increasingly interconnected. This Bangor Daily News op-ed argues that the next
   governor’s central task will be building the governing capacity to coordinate
